@@ -16,3 +16,4 @@ x = preprocess_input(x)
 
 block4_pool_features = model.predict(x)
 print(block4_pool_features)
+model.predict_generator(x)
