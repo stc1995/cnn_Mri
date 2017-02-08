@@ -13,7 +13,7 @@ x = preprocess_input(x)
 features = model.predict(x)
 print(features.shape)
 features = [features]
-for i in range(98):
+for i in range(1, 98):
     img_path = 'old_%d.jpg' % i
     print(img_path)
     img = image.load_img(img_path, target_size=(224, 224))
@@ -24,7 +24,7 @@ for i in range(98):
     features.append(temp)
 
 features = np.array(features)
-print(features.shape) (99, 1, 7, 7, 512)
+print(features.shape) #(99, 1, 7, 7, 512)
 np.save('old_features.npy', features)
 
 
@@ -36,7 +36,7 @@ x = preprocess_input(x)
 features = model.predict(x)
 print(features.shape)
 features = [features]
-for i in range(100):
+for i in range(1, 100):
     img_path = 'ad_%d.jpg' % i
     print(img_path)
     img = image.load_img(img_path, target_size=(224, 224))
