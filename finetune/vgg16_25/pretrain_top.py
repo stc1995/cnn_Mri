@@ -62,6 +62,8 @@ model.add(BatchNormalization(input_shape=train_data.shape[1:]))
 model.add(Flatten())
 model.add(Dense(256, activation='relu'))
 model.add(Dropout(0.5))
+model.add(Dense(256, activation='relu'))
+model.add(Dropout(0.5))
 model.add(Dense(2, activation='softmax'))
 
 # model.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['accuracy'])

@@ -6,6 +6,7 @@ from keras.preprocessing import image
 from keras.applications.vgg16 import preprocess_input
 from keras.layers.normalization import BatchNormalization
 from keras.models import Model
+from keras import optimizers
 import numpy as np
 import random
 
@@ -14,7 +15,10 @@ img = image.load_img(img_path, target_size=(224, 224))
 temp = image.img_to_array(img)
 temp = np.expand_dims(temp, axis=0)
 temp = preprocess_input(temp)
+temp = temp[0]
 oldData = [temp]
+print(temp.shape)
+print(type(temp))
 for i in range(1, 98):
     img_path = 'old_%d.jpg' % i
     print(img_path)
@@ -22,7 +26,9 @@ for i in range(1, 98):
     temp = image.img_to_array(img)
     temp = np.expand_dims(temp, axis=0)
     temp = preprocess_input(temp)
+    temp = temp[0]
     oldData.append(temp)
+
 
 oldData = np.array(oldData)
 print(oldData.shape) #(98, 1, 7, 7, 512)
@@ -33,6 +39,7 @@ img = image.load_img(img_path, target_size=(224, 224))
 temp = image.img_to_array(img)
 temp = np.expand_dims(temp, axis=0)
 temp = preprocess_input(temp)
+temp = temp[0]
 adData = [temp]
 for i in range(1, 100):
     img_path = 'ad_%d.jpg' % i
@@ -41,6 +48,7 @@ for i in range(1, 100):
     temp = image.img_to_array(img)
     temp = np.expand_dims(temp, axis=0)
     temp = preprocess_input(temp)
+    temp = temp[0]
     adData.append(temp)
 
 adData = np.array(adData)
@@ -137,6 +145,8 @@ top_model.add(BatchNormalization(input_shape=(1, 7, 7, 512)))
 top_model.add(Flatten())
 top_model.add(Dense(256, activation='relu'))
 top_model.add(Dropout(0.5))
+top_model.add(Dense(256, activation='relu'))
+top_model.add(Dropout(0.5))
 top_model.add(Dense(2, activation='softmax'))
 
 # note that it is necessary to start with a fully-trained
@@ -147,7 +157,10 @@ top_model.load_weights('bottleneck_fc_model.h5')
 # add the model on top of the convolutional base
 
 base_model.add(top_model)
+for layer in base_model.layers[:25]:
+    layer.trainable = False
 
+base_model.compile(optimizer=optimizers.SGD(lr=1e-4, momentum=0.9), loss='binary_crossentropy', metrics=['accuracy'])
 # base_model.compile(optimizer='Adam', loss='binary_crossentropy', metrics=['accuracy'])
-#
-# base_model.fit(train_data, train_labels, nb_epoch=100, batch_size=10, validation_data=(validation_data, validation_labels))
+
+base_model.fit(train_data, train_labels, nb_epoch=50, batch_size=5, validation_data=(validation_data, validation_labels))
